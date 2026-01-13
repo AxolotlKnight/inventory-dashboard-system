@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./src/routes/auth.routes');
-const productRoutes = require('./src/routes/product.routes');
+const initializeDatabase = require('./src/utils/dbInit');
 
 const app = express();
 
@@ -10,7 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rutas básicas
+// Basic Routes
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
@@ -19,16 +19,43 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Rutas de la aplicación
+// Application Routes
 app.use('/api/auth', authRoutes);
 
-// Manejo de errores
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).json({ 
+    error: 'Route not found',
+    path: req.path,
+    method: req.method
+  });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Error Handling
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err.stack);
+  res.status(500).json({ 
+    error: 'Internal server error',
+    message: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
 });
+
+// Inicializar base de datos y arrancar servidor
+const startServer = async () => {
+  try {
+    // Inicializar DB
+    await initializeDatabase();
+    
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+      console.log(`Health check: http://localhost:${PORT}/api/health`);
+      console.log(`Login test: http://localhost:${PORT}/api/auth/login`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
