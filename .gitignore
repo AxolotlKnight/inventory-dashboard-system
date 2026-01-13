@@ -1,18 +1,16 @@
-# =========== IGNORAR CARPETAS DE DEPENDENCIAS ===========
 node_modules/
 frontend/node_modules/
 backend/node_modules/
-
-# =========== ENVIRONMENT FILES ===========
 .env
 .env.local
-.env.*.local
-
-# =========== ARCHIVOS DE SISTEMA/IDE ===========
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
-*.swp
-*.swo
-*~
+dist/
+build/
+*.log
+logs/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
