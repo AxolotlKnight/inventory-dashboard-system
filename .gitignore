@@ -14,3 +14,5 @@ logs/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+frontend/pos-electron/dist_electron/builder-effective-config.yaml
+/frontend/pos-electron/dist_electron
